@@ -1,0 +1,173 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Common">
+      <UniqueIdentifier>f98ac509-35c3-40ed-b338-8dd497a21e29</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets">
+      <UniqueIdentifier>f90d133b-83f0-4f23-8dd3-bb75f7520bb9</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dds;dlg;fbx;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tga;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="imgui">
+      <UniqueIdentifier>{09b29daa-c217-4b84-97d0-312588946d98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{671d234c-0075-42da-8622-e5b7ccd8deb2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework">
+      <UniqueIdentifier>{4bc5491d-fa19-46d5-8b0b-749048e9909e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Microsoft">
+      <UniqueIdentifier>{5b1bd956-646f-4a3c-8163-e4697926016c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{6903f4f3-ad50-4141-843b-3d96bb9ceb99}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="StepTimer.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="DeviceResources.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imconfig.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_impl_dx11.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_impl_win32.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_internal.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\ImGuizmo.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imstb_rectpack.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imstb_textedit.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imstb_truetype.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\CommonResources.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\ConstantBuffer.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\DebugCamera.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\InputManager.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Microsoft\DebugDraw.h">
+      <Filter>Framework\Microsoft</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Microsoft\ReadData.h">
+      <Filter>Framework\Microsoft</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Microsoft\RenderTexture.h">
+      <Filter>Framework\Microsoft</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Scene.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="DeviceResources.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_demo.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_draw.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_impl_dx11.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_impl_win32.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_tables.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_widgets.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\ImGuizmo.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\DebugCamera.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\InputManager.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Microsoft\DebugDraw.cpp">
+      <Filter>Framework\Microsoft</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Microsoft\RenderTexture.cpp">
+      <Filter>Framework\Microsoft</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Scene.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="directx.ico">
+      <Filter>Assets</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="settings.manifest">
+      <Filter>Assets</Filter>
+    </Manifest>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="Resources\hlsl\Sea.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="imgui\LICENSE.txt">
+      <Filter>imgui</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Resources\hlsl\Sea_DS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\hlsl\Sea_HS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\hlsl\Sea_PS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\hlsl\Sea_VS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+  </ItemGroup>
+</Project>
