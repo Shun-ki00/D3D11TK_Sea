@@ -2,20 +2,18 @@
 
 static const float PI = 3.1415926f;
 
-//------------------------------------------
-// 構造体（Unity の Param に対応）
+// 波のパラメータを格納する構造体
 struct WaveParam
 {
-    float Q;
-    float A;
-    float WA;
-    float sinTheta;
-    float cosTheta;
-    float2 D;
+    float Q;        // 傾斜係数
+    float A;        // 振幅
+    float WA;       // 角振幅
+    float sinTheta; // 波の角度
+    float cosTheta; // 波の角度
+    float2 D;       // 方向ベクトル
 };
 
-//------------------------------------------
-// 波パラメータ初期化（角度と補助値計算）
+// 波パラメータを初期化し、必要な事前計算を行う
 WaveParam InitWaveParam(float2 xy, float QRatio, float A, float2 D, float t, float L, float S)
 {
     WaveParam param = (WaveParam) 0;
@@ -38,8 +36,7 @@ WaveParam InitWaveParam(float2 xy, float QRatio, float A, float2 D, float t, flo
     return param;
 }
 
-//------------------------------------------
-// 波形変位（Shift計算）
+// 波による頂点変位を計算
 float3 CalculateShift(const WaveParam p)
 {
     return float3(
@@ -49,8 +46,8 @@ float3 CalculateShift(const WaveParam p)
     );
 }
 
-//------------------------------------------
-// 頂点変位
+
+// 複数の波を合成し、XY位置に基づく最終的な頂点の変位を返す
 float3 P(float2 xy, float t)
 {
     float2 D1 = float2(direction1X, direction1Z);
@@ -68,8 +65,7 @@ float3 P(float2 xy, float t)
 }
 
 
-//------------------------------------------
-// ドメインシェーダ本体
+// ドメインシェーダー本体
 [domain("quad")]
 DS_OUTPUT main(
     DS_INPUT input,
@@ -104,11 +100,7 @@ DS_OUTPUT main(
     // 波計算（XZベース）
     float2 xy = worldPosition.xz;
     float t = TessellationFactor.y;
-
-    WaveParam p1 = InitWaveParam(xy, qRatio1, amplitude1, float2(direction1X, direction1Z), t, waveLength1, speed1);
-    WaveParam p2 = InitWaveParam(xy, qRatio2, amplitude2, float2(direction2X, direction2Z), t, waveLength2, speed2);
-    WaveParam p3 = InitWaveParam(xy, qRatio3, amplitude3, float2(direction3X, direction3Z), t, waveLength3, speed3);
-
+    
     worldPosition = P(xy, t).xzy;
 
     // ワールド→クリップ変換

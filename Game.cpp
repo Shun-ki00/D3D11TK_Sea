@@ -70,9 +70,9 @@ void Game::Initialize(HWND window, int width, int height)
     m_inputManager->GetMouse()->SetWindow(window);
 
     // タイマー設定を変更する   
-    m_timer.SetFixedTimeStep(true);
+    // m_timer.SetFixedTimeStep(true);
     // タイマーにターゲット経過秒(60FPS)を設定する
-    m_timer.SetTargetElapsedSeconds(1.0 / 60);
+    // m_timer.SetTargetElapsedSeconds(1.0 / 60);
 
     m_commonResources->SetStepTimer(&m_timer);
 
@@ -196,18 +196,7 @@ void Game::Render()
     // シーンの描画
     m_scene->Render();
 
-    //  新フレームの開始
-    ImGui_ImplDX11_NewFrame();
-    ImGui_ImplWin32_NewFrame();
-    ImGui::NewFrame();
-
-    ImGuiIO& io = ImGui::GetIO();
-    io.ConfigViewportsNoTaskBarIcon = false; // OSのタスクバーにアイコンを表示しない
-    io.ConfigViewportsNoDecoration = false;  // OSウィンドウの枠を消す
-
-    // デバッグウィンドウ
-    m_scene->ImguiWindow();
-
+   
     wchar_t stringBuffer[128];
 
     // 画面サイズ
@@ -256,6 +245,18 @@ void Game::Render()
     swprintf(stringBuffer, sizeof(stringBuffer) / sizeof(wchar_t), L"ScreenW : %d ScreenH : %d", 1280, 720);
     m_spriteFont->DrawString(m_spriteBatch.get(), stringBuffer, SimpleMath::Vector2(10, 40), Colors::White, 0.0f, SimpleMath::Vector2::Zero, 0.8f);
     m_spriteBatch->End();
+
+    //  新フレームの開始
+    ImGui_ImplDX11_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
+
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigViewportsNoTaskBarIcon = false; // OSのタスクバーにアイコンを表示しない
+    io.ConfigViewportsNoDecoration = false;  // OSウィンドウの枠を消す
+
+    // デバッグウィンドウ
+    m_scene->ImguiWindow();
 
     //  ImGuiの描画処理
     ImGui::Render();

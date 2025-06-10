@@ -10,8 +10,8 @@ class Scene
 {
 private:
 
-	// 定数バッファ
-	struct ConstBuffer
+	// 変換用定数バッファ
+	struct TransformConstBuffer
 	{
 		DirectX::SimpleMath::Matrix		matWorld;
 		DirectX::SimpleMath::Matrix		matView;
@@ -19,8 +19,22 @@ private:
 		DirectX::SimpleMath::Vector4    TessellationFactor;
 	};
 
-	// 波のパラメータ
-	struct WaveParams
+	// 海のノイズ用の定数バッファ
+	struct SeaNoiseConstBuffer
+	{
+		float flowVelocity;    // 流れる力
+		float swingSpeed;      // 左右の振れ
+		float fnUVPath1;       // ノイズの影響 (x軸)
+		float fnUVPath2;       // ノイズの影響 (y軸)
+
+		float fnUVPower;       // UVスケール
+		float fnOctaves;       // ノイズのオクターブ数
+		float fnPersistence;   // ノイズ持続度
+		float padding;         // パディング
+	};
+
+	// ゲルストナ波の定数バッファ
+	struct GerstnerWaveConstBuffer
 	{
 		// Wave1
 		float active1, direction1X, direction1Z, amplitude1;
@@ -93,14 +107,19 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> m_vertexBuffer;
 	// 定数バッファ
 	Microsoft::WRL::ComPtr<ID3D11Buffer> m_constantBuffer;
-	// 波パラメータ
-	Microsoft::WRL::ComPtr<ID3D11Buffer> m_waveConstantBuffer;
+
+	// 海のノイズ用の定数バッファ
+	Microsoft::WRL::ComPtr<ID3D11Buffer> m_seaNoiseConstBuffer;
+	// ゲルストナ波のバッファ
+	Microsoft::WRL::ComPtr<ID3D11Buffer> m_gerstnerWaveConstBuffer;
 
 	// テクスチャ
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
 
-	// 波のパラメータデータ
-	WaveParams m_waveParams;
+	// 海のノイズ用の定数バッファ
+	SeaNoiseConstBuffer m_seaNoiseConstBufferData;
+	// ゲルストナ波のバッファデータ
+	GerstnerWaveConstBuffer m_gerstnerWaveConstBufferData;
 	// テッセレーション係数
 	float m_tessellationIndex;
 	// ラスタライザーモード設定

@@ -1,15 +1,5 @@
 #include "Sea.hlsli"
 
-#define FLOW_VELOCITY 0.1f      // 流れる力
-#define SWING_SPEED 0.01f       // 左右に振れる力
-#define FN_UV_PATH1 0.08f       // ノイズの結果に乗算する値
-#define FN_UV_PATH2 0.06f       // ノイズの結果に乗算する値
-#define FN_UV_POWER 25          // uvのサイズ
-#define FN_OCTAVES 10.0f        // オクターブ
-#define FN_PERSISTENCE 0.6f     // 持続度
-#define RANDOM_OFFSET 0.01f     // ランダムオフセット
-// タイルサイズ（例：10x10）
-#define TILE_COUNT 1
 
 // テクスチャ
 Texture2D tex : register(t0);
@@ -57,10 +47,10 @@ float originalNoise(float2 uv)
     float amplitude = 1.0f;
     float frequency = 1.0f;
     
-    for (float i = 0; i < FN_OCTAVES; ++i)
+    for (float i = 0; i < fnOctaves; ++i)
     {
         output += perlinNoise(uv * frequency) * amplitude;
-        amplitude *= FN_PERSISTENCE;
+        amplitude *= fnPersistence;
         frequency *= 2.0f;
     }
     
@@ -71,67 +61,29 @@ float originalNoise(float2 uv)
 // 波打ち関数
 void waveUV(inout float2 uv)
 {
-    uv.x += TessellationFactor.y * FLOW_VELOCITY; // 横移動
-    uv.y += cos(TessellationFactor.y) * SWING_SPEED; // 縦揺れ
-}
-
-float hash21(float2 p)
-{
-    p = frac(p * float2(123.34, 456.21));
-    p += dot(p, p + 45.32);
-    return frac(p.x * p.y);
+    uv.x += TessellationFactor.y * flowVelocity; // 横移動
+    uv.y += cos(TessellationFactor.y) * swingSpeed; // 縦揺れ
 }
 
 
 // ピクセルシェーダー本体
 float4 main(PS_INPUT input) : SV_TARGET
 {
-   
+    // ランダムなオフセットを生成
     float2 uv = input.uv;
-
+    float2 offset = perlinNoise(uv);
+    uv += offset;
     
-  // タイル座標
-    float2 tileUV = uv * TILE_COUNT;
-    int2 tileIndex = int2(floor(tileUV));
-
-    // 各タイル内でのローカルUV（0^1）
-    float2 localUV = frac(tileUV);
-
-    // タイル座標に基づいて Y軸だけランダム反転
-    float2 offsetSeed = float2(tileIndex);
-
-    // Y軸反転：50%の確率で反転
-    bool flipY = hash21(offsetSeed + 345.678) < 0.5;
-
-    if (flipY)
-        localUV.y = 1.0 - localUV.y;
-
-    // ランダムオフセット生成
-    float2 offset = float2(
-    hash21(offsetSeed),
-    hash21(offsetSeed + 123.456)
-    );
-
-    // UVにオフセットを加える
-    float2 uvWithOffset = localUV + offset * 0.1;
-
-    // ノイズ入力にタイルオフセットを加えて、各タイルをランダム化
-    float2 noiseUV = uvWithOffset * FN_UV_POWER + offset * 10.0;
-    float p = originalNoise(noiseUV);
-
-    // UV変形
-    uvWithOffset += float2(
-    p * FN_UV_PATH1 * cos(TessellationFactor.y),
-    p * FN_UV_PATH2 * sin(TessellationFactor.y)
-    );
-
-    // 波打ち
-    waveUV(uvWithOffset);
-
-    // テクスチャサンプリング
-    float4 output = tex.Sample(sam, uvWithOffset);
+    // オリジナルノイズ
+    float p = originalNoise(uv * fnUVPower);
+    uv += float2(p * fnUVPath1 * cos(TessellationFactor.y), p * fnUVPath2 * sin(TessellationFactor.y));
     
-    output.rgb *= 0.8;
+    // 波打ち関数
+    waveUV(uv);
+    
+    // テクスチャをサンプリング
+    float4 output = tex.Sample(sam, uv);
+    
     
     return output;
 }
