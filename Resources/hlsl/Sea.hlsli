@@ -66,6 +66,7 @@ cbuffer TransformConstBuffer : register(b0)
     matrix matWorld;
     matrix matView;
     matrix matProj;
+    float4 cameraPosition;
     float4 TessellationFactor; 
 };
 

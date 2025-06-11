@@ -16,6 +16,7 @@ private:
 		DirectX::SimpleMath::Matrix		matWorld;
 		DirectX::SimpleMath::Matrix		matView;
 		DirectX::SimpleMath::Matrix		matProj;
+		DirectX::SimpleMath::Vector4    cameraPosition;
 		DirectX::SimpleMath::Vector4    TessellationFactor;
 	};
 

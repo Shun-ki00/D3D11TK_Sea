@@ -77,6 +77,7 @@ void Scene::Render()
 	cbuff.matView = m_camera->GetViewMatrix().Transpose();
 	cbuff.matProj = m_commonResources->GetProjectionMatrix().Transpose();
 	cbuff.matWorld = world.Transpose();
+	cbuff.cameraPosition = { m_camera->GetEyePosition().x,m_camera->GetEyePosition().y,m_camera->GetEyePosition().z ,0.0f };
 	cbuff.TessellationFactor = DirectX::SimpleMath::Vector4(m_tessellationIndex, m_time, 2.0f, 0.0f);
 
 	//	受け渡し用バッファの内容更新(ConstBufferからID3D11Bufferへの変換）
@@ -128,7 +129,7 @@ void Scene::Render()
 	m_context->PSSetShaderResources(0, 1, tex);
 
 	// 描画コール
-	m_context->Draw(static_cast<UINT>(32 * (100 * 100)), 0);
+	m_context->Draw(static_cast<UINT>(32 * (200 * 200)), 0);
 
 	//	シェーダの登録を解除
 	m_context->VSSetShader(nullptr, nullptr, 0);
@@ -313,8 +314,8 @@ void Scene::CreateShaderWithBuffers()
 	m_context->UpdateSubresource(m_seaNoiseConstBuffer.Get(), 0, nullptr, &m_seaNoiseConstBufferData, 0, 0);
 
 
-	const int PATCH_COUNT_X = 100;
-	const int PATCH_COUNT_Z = 100;
+	const int PATCH_COUNT_X = 200;
+	const int PATCH_COUNT_Z = 200;
 	const int PATCH_TOTAL = PATCH_COUNT_X * PATCH_COUNT_Z;
 	const int VERTICES_PER_PATCH = 32;
 	const int TOTAL_VERTICES = PATCH_TOTAL * VERTICES_PER_PATCH;
