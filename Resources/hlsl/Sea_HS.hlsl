@@ -19,7 +19,7 @@ HS_CONSTANT_OUTPUT HS_ConstantFunction(InputPatch<HS_INPUT, 32> patch, uint patc
     float distXZ = distance(camXZ, patchXZ);
 
     // パラメータ調整
-    float maxRange = 500.0f; // 減衰開始?最大範囲
+    float maxRange = 1100.0f; // 減衰開始?最大範囲
     float normalizedDist = saturate(distXZ / maxRange);
 
     // 非線形減衰（指数関数型）

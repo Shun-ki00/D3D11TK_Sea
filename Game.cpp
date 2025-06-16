@@ -413,12 +413,5 @@ void Game::OnDeviceRestored()
     // ウィンドウサイズに依存したリソースを生成する
     CreateWindowSizeDependentResources();
 }
-// フルスクリーン対応
-void Game::SetFullscreenState(BOOL value)
-{
-    m_full_screen = value;
-    m_deviceResources->GetSwapChain()->SetFullscreenState(m_full_screen, nullptr);
-    if (value) m_deviceResources->CreateWindowSizeDependentResources();
-}
 
 #pragma endregion

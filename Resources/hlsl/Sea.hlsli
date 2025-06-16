@@ -49,6 +49,8 @@ struct DS_OUTPUT
 {
     float4 position : SV_POSITION;
     float2 uv : TEXCOORD0;
+    
+    float4 positionWS : POSITION;
 };
 
 
@@ -57,6 +59,8 @@ struct PS_INPUT
 {
     float4 position : SV_POSITION;
     float2 uv : TEXCOORD0;
+    
+    float4 positionWS : POSITION;
 };
 
 

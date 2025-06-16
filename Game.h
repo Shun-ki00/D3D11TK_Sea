@@ -46,8 +46,7 @@ public:
 
     // 規定ウィンドウサイズプロパティを取得する
     void GetDefaultSize(int& width, int& height) const noexcept;
-    // 画面モードを変更する関数（TRUE:フルスクリーン）
-    void SetFullscreenState(BOOL value);
+
 private:
     // 更新処理
     void Update(DX::StepTimer const& timer);
@@ -75,8 +74,6 @@ private:
     std::unique_ptr<DirectX::CommonStates>  m_commonStates;
     // デバイスリソース
     std::unique_ptr<DX::DeviceResources> m_deviceResources;
-    // フルスクリーン
-    BOOL m_full_screen;
 
     // 共有リソース
     CommonResources* m_commonResources;

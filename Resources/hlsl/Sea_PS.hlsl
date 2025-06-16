@@ -71,8 +71,13 @@ float4 main(PS_INPUT input) : SV_TARGET
 {
     // ランダムなオフセットを生成
     float2 uv = input.uv;
-    float2 offset = perlinNoise(uv);
+       
+    float2 offset = perlinNoise(uv );
     uv += offset;
+    
+    
+    //float2 offset = perlinNoise(uv);
+    //uv += offset;
     
     // オリジナルノイズ
     float p = originalNoise(uv * fnUVPower);

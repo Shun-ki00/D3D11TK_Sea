@@ -105,6 +105,9 @@ DS_OUTPUT main(
 
     // ワールド→クリップ変換
     float4 pos = mul(float4(worldPosition, 1.0f), matWorld);
+    
+    output.positionWS = pos;
+    
     pos = mul(pos, matView);
     pos = mul(pos, matProj);
 
