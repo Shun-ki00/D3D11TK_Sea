@@ -74,6 +74,7 @@ cbuffer TransformConstBuffer : register(b0)
     float4 TessellationFactor; 
 };
 
+
 // 海のノイズデータ
 cbuffer SeaNoiseConstBuffer : register(b1)
 {
@@ -123,3 +124,10 @@ cbuffer GerstnerWaveConstBuffer : register(b2)
     float qRatio3     : packoffset(c5.z);
     float pad3        : packoffset(c5.w);
 }
+
+// テクスチャ
+Texture2D tex : register(t0);
+// サンプラー
+SamplerState sam : register(s0);
+
+StructuredBuffer<float3> InstanceBuffer : register(t1);
