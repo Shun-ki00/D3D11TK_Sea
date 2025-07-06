@@ -34,7 +34,6 @@ void Scene::Initialize()
 	this->CreateShaderWithBuffers();
 
 	this->CreateVertices();
-	this->CreateIndices();
 	this->CreateInstanceData();
 
 	// 頂点を生成
@@ -105,9 +104,6 @@ void Scene::Render()
 	UINT offset[] = { 0 };
 	m_context->IASetVertexBuffers(0, 1, buffers, stride, offset);
 
-	// インデックスバッファ設定
-	m_context->IASetIndexBuffer(m_indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
-
 	// プリミティブトポロジー（三角形リスト）
 	m_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST);
 
@@ -146,12 +142,11 @@ void Scene::Render()
 
 	// StructuredBuffer: インスタンスのワールド行列
 	ID3D11ShaderResourceView* srvs[] = { m_instanceSRV.Get() };
-	m_context->DSSetShaderResources(1, 1, srvs);
+	m_context->VSSetShaderResources(1, 1, srvs);
 
 	// 描画呼び出し（インスタンス描画）
-	UINT indexCountPerPatch = static_cast<UINT>(m_indices.size());
 	UINT instanceCount = static_cast<UINT>(m_instanceData.size());
-	m_context->DrawIndexedInstanced(indexCountPerPatch, instanceCount, 0, 0, 0);
+	m_context->DrawInstanced(4, instanceCount, 0, 0);
 
 	//	シェーダの登録を解除
 	m_context->VSSetShader(nullptr, nullptr, 0);
@@ -162,7 +157,7 @@ void Scene::Render()
 	// テクスチャリソースを解放
 	ID3D11ShaderResourceView* nullsrv[] = { nullptr };
 	m_context->PSSetShaderResources(0, 1, nullsrv);
-	m_context->DSSetShaderResources(1, 1, nullsrv);
+	m_context->VSSetShaderResources(1, 1, nullsrv);
 
 }
 
@@ -384,38 +379,12 @@ void Scene::CreateVertices()
 }
 
 
-/// <summary>
-/// インデックスの作成
-/// </summary>
-void Scene::CreateIndices()
-{
-	// 初期化としてクリア
-	m_indices.clear();
-	// 必要な数配列を用意
-	m_indices.reserve(4);
-
-	for (uint16_t i = 0; i < 4; ++i)
-		m_indices.push_back(i);
-
-	// インデックスバッファの作成
-	D3D11_BUFFER_DESC indexBufferDesc = {};
-	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	indexBufferDesc.ByteWidth = static_cast<UINT>(sizeof(uint16_t) * m_indices.size());
-	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-
-	D3D11_SUBRESOURCE_DATA indexBufferData = {};
-	indexBufferData.pSysMem = m_indices.data();
-
-	m_device->CreateBuffer(&indexBufferDesc, &indexBufferData, m_indexBuffer.ReleaseAndGetAddressOf());
-}
-
-
 void Scene::CreateInstanceData()
 {
 	m_instanceData.clear();
 
-	constexpr int width = 2500;
-	constexpr int height = 2500;
+	constexpr int width = 2000;
+	constexpr int height = 2000;
 	constexpr float tileSize = 10.0f; // 各板ポリの幅
 
 	m_instanceData.clear();

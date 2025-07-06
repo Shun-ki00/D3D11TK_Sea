@@ -23,8 +23,9 @@ VS_OUTPUT main(VS_INPUT input, uint instanceId : SV_InstanceID)
     output.position = input.position;
     // ’¸“_F‚ÆUVÀ•W‚ğ‚»‚Ì‚Ü‚Ü“n‚·
     output.uv = input.uv;
-    // ID‚ğ“n‚·
-    output.instanceId = instanceId;
+    
+    float3 offset = InstanceBuffer[instanceId];
+    output.position += float4(offset, 1.0f);
 
     return output;
 }

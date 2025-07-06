@@ -36,14 +36,14 @@ HS_CONSTANT_OUTPUT HS_ConstantFunction(InputPatch<HS_INPUT, 4> patch, uint patch
     tessFactor *= heightMask;
     
     // エッジの細分化レベルを設定
-    output.EdgeTess[0] = TessellationFactor.x; // 左
-    output.EdgeTess[1] = TessellationFactor.x; // 上
-    output.EdgeTess[2] = TessellationFactor.x; // 右
-    output.EdgeTess[3] = TessellationFactor.x; // 下
+    output.EdgeTess[0] = tessFactor; // 左
+    output.EdgeTess[1] = tessFactor; // 上
+    output.EdgeTess[2] = tessFactor; // 右
+    output.EdgeTess[3] = tessFactor; // 下
 
     // 内部の細分化レベル（U方向とV方向）
-    output.InsideTess[0] = TessellationFactor.x; // U方向
-    output.InsideTess[1] = TessellationFactor.x; // V方向
+    output.InsideTess[0] = tessFactor; // U方向
+    output.InsideTess[1] = tessFactor; // V方向
 
   
     return output;
@@ -64,8 +64,6 @@ HS_OUTPUT main(InputPatch<HS_INPUT, 4> patch, uint controlPointID : SV_OutputCon
     // 入力をそのまま出力（制御点を加工しない場合）
     output.position = patch[controlPointID].position;
     output.uv = patch[controlPointID].uv;
-    
-    output.instanceId = patch[controlPointID].instanceId;
-
+   
     return output;
 }

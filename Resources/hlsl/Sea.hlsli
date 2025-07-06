@@ -12,7 +12,6 @@ struct VS_OUTPUT
 {
     float4 position : SV_POSITION; // 頂点位置
     float2 uv       : TEXCOORD;    // UV座標
-    uint instanceId : SV_InstanceID;
 };
 
 
@@ -23,14 +22,12 @@ struct HS_INPUT
 {
     float4 position : SV_POSITION; // 頂点の位置
     float2 uv       : TEXCOORD;    // UV座標
-    uint instanceId : SV_InstanceID;
 };
 // 出力構造体
 struct HS_OUTPUT
 {
     float4 position : SV_POSITION; // 頂点の位置
     float2 uv : TEXCOORD; // UV座標
-    uint instanceId : SV_InstanceID;
 };
 // テッセレーション定数
 struct HS_CONSTANT_OUTPUT

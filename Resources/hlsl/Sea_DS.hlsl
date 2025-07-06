@@ -96,18 +96,14 @@ DS_OUTPUT main(
             uvOut += patch[idx].uv * w;
         }
     }
-
+    
     // 波計算（XZベース）
     float2 xy = worldPosition.xz;
     float t = TessellationFactor.y;
     
+
     worldPosition = P(xy, t).xzy;
     
-    uint instanceID = patch[0].instanceId; // 全頂点同じなので [0] で OK
-    float3 world = InstanceBuffer[instanceID];
-    
-    worldPosition += world;
-
     // ワールド→クリップ変換
     float4 pos = mul(float4(worldPosition, 1.0f), matWorld);
     
