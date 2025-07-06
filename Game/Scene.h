@@ -20,6 +20,12 @@ private:
 		DirectX::SimpleMath::Vector4    TessellationFactor;
 	};
 
+	// インスタンスデータ
+	struct InstanceData
+	{
+		DirectX::SimpleMath::Vector3 worldMatrix;
+	};
+
 	// 海のノイズ用の定数バッファ
 	struct SeaNoiseConstBuffer
 	{
@@ -74,6 +80,13 @@ public:
 
 private:
 
+	// 頂点の生成
+	void CreateVertices();
+	// インデクスの生成
+	void CreateIndices();
+	// インスタンスデータの作成
+	void CreateInstanceData();
+
 	// シェーダーやバッファの作成
 	void CreateShaderWithBuffers();
 	
@@ -106,6 +119,11 @@ private:
 
 	// 頂点バッファ
 	Microsoft::WRL::ComPtr<ID3D11Buffer> m_vertexBuffer;
+	// インデックスバッファ
+	Microsoft::WRL::ComPtr<ID3D11Buffer> m_indexBuffer;
+	// インスタンスバッファ
+	Microsoft::WRL::ComPtr<ID3D11Buffer> m_instanceStructuredBuffer;
+
 	// 定数バッファ
 	Microsoft::WRL::ComPtr<ID3D11Buffer> m_constantBuffer;
 
@@ -116,6 +134,15 @@ private:
 
 	// テクスチャ
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
+	// インスタンスのシェーダーリソースビュー
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_instanceSRV;
+
+	// 板ポリの頂点群
+	std::vector<DirectX::VertexPositionTexture> m_vertices;
+	// 板ポリのインデックスバッファ
+	std::vector<uint16_t> m_indices;
+	// インスタンスデータ
+	std::vector<InstanceData> m_instanceData;
 
 	// 海のノイズ用の定数バッファ
 	SeaNoiseConstBuffer m_seaNoiseConstBufferData;

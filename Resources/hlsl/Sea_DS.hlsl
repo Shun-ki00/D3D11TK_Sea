@@ -69,7 +69,7 @@ float3 P(float2 xy, float t)
 [domain("quad")]
 DS_OUTPUT main(
     DS_INPUT input,
-    const OutputPatch<HS_OUTPUT, 32> patch,
+    const OutputPatch<HS_OUTPUT, 4> patch,
     const HS_CONSTANT_OUTPUT patchConstants
 )
 {
@@ -80,8 +80,8 @@ DS_OUTPUT main(
     float2 uvOut = float2(0.0f, 0.0f);
 
     // 制御点補間（8×4）
-    const int X = 8;
-    const int Z = 4;
+    const int X = 2;
+    const int Z = 2;
 
     for (int z = 0; z < Z; ++z)
     {
@@ -102,6 +102,11 @@ DS_OUTPUT main(
     float t = TessellationFactor.y;
     
     worldPosition = P(xy, t).xzy;
+    
+    uint instanceID = patch[0].instanceId; // 全頂点同じなので [0] で OK
+    float3 world = InstanceBuffer[instanceID];
+    
+    worldPosition += world;
 
     // ワールド→クリップ変換
     float4 pos = mul(float4(worldPosition, 1.0f), matWorld);

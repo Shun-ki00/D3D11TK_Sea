@@ -1,11 +1,6 @@
 #include "Sea.hlsli"
 
 
-// テクスチャ
-Texture2D tex : register(t0);
-// サンプラー
-SamplerState sam : register(s0);
-
 float random(float2 uv)
 {
     return frac(sin(dot(uv, float2(12.9898f, 78.233f))) * 43758.5453f);
@@ -87,7 +82,7 @@ float4 main(PS_INPUT input) : SV_TARGET
     waveUV(uv);
     
     // テクスチャをサンプリング
-    float4 output = tex.Sample(sam, uv);
+    float4 output = tex.Sample(sam,uv);
     
     
     return output;

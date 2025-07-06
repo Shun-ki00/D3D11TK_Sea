@@ -33,6 +33,19 @@ void Scene::Initialize()
 	// シェーダー、バッファの作成
 	this->CreateShaderWithBuffers();
 
+	this->CreateVertices();
+	this->CreateIndices();
+	this->CreateInstanceData();
+
+	// 頂点を生成
+	//std::thread vertices(&Scene::CreateVertices, this);
+	//// インデックスの生成
+	//std::thread indices(&Scene::CreateIndices , this);
+
+	//// 生成が終わるまで待つ
+	//vertices.join();
+	//indices.join();
+
 	// 初期化
 	m_time = 0.0f;
 	m_tessellationIndex = 1.0f;
@@ -70,7 +83,7 @@ void Scene::Render()
 
 	// ワールド行列作成
 	DirectX::SimpleMath::Matrix world =
-		DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3::Down);
+		DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3::Zero);
 
 	//	シェーダーに渡す追加のバッファを作成する。
 	TransformConstBuffer cbuff;
@@ -92,6 +105,12 @@ void Scene::Render()
 	UINT offset[] = { 0 };
 	m_context->IASetVertexBuffers(0, 1, buffers, stride, offset);
 
+	// インデックスバッファ設定
+	m_context->IASetIndexBuffer(m_indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
+
+	// プリミティブトポロジー（三角形リスト）
+	m_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST);
+
 	//	シェーダーにバッファを渡す
 	ID3D11Buffer* cb[3] = { m_constantBuffer.Get() , m_seaNoiseConstBuffer.Get() , m_gerstnerWaveConstBuffer.Get()};
 	// スロット1から3に一括バインド
@@ -106,9 +125,6 @@ void Scene::Render()
 
 	// ブレンドステートを設定 (半透明描画用)
 	m_context->OMSetBlendState(m_commonStates->AlphaBlend(), nullptr, 0xFFFFFFFF);
-
-	// プリミティブトポロジーを設定
-	m_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_32_CONTROL_POINT_PATCHLIST);
 
 	//	深度バッファに書き込み参照する
 	m_context->OMSetDepthStencilState(m_commonStates->DepthDefault(), 0);
@@ -128,8 +144,14 @@ void Scene::Render()
 	ID3D11ShaderResourceView* tex[1] = { m_texture.Get() };
 	m_context->PSSetShaderResources(0, 1, tex);
 
-	// 描画コール
-	m_context->Draw(static_cast<UINT>(32 * (200 * 200)), 0);
+	// StructuredBuffer: インスタンスのワールド行列
+	ID3D11ShaderResourceView* srvs[] = { m_instanceSRV.Get() };
+	m_context->DSSetShaderResources(1, 1, srvs);
+
+	// 描画呼び出し（インスタンス描画）
+	UINT indexCountPerPatch = static_cast<UINT>(m_indices.size());
+	UINT instanceCount = static_cast<UINT>(m_instanceData.size());
+	m_context->DrawIndexedInstanced(indexCountPerPatch, instanceCount, 0, 0, 0);
 
 	//	シェーダの登録を解除
 	m_context->VSSetShader(nullptr, nullptr, 0);
@@ -140,6 +162,7 @@ void Scene::Render()
 	// テクスチャリソースを解放
 	ID3D11ShaderResourceView* nullsrv[] = { nullptr };
 	m_context->PSSetShaderResources(0, 1, nullsrv);
+	m_context->DSSetShaderResources(1, 1, nullsrv);
 
 }
 
@@ -312,62 +335,130 @@ void Scene::CreateShaderWithBuffers()
 	m_device->CreateBuffer(&desc, nullptr, m_seaNoiseConstBuffer.ReleaseAndGetAddressOf());
 
 	m_context->UpdateSubresource(m_seaNoiseConstBuffer.Get(), 0, nullptr, &m_seaNoiseConstBufferData, 0, 0);
+}
 
 
-	const int PATCH_COUNT_X = 200;
-	const int PATCH_COUNT_Z = 200;
-	const int PATCH_TOTAL = PATCH_COUNT_X * PATCH_COUNT_Z;
-	const int VERTICES_PER_PATCH = 32;
-	const int TOTAL_VERTICES = PATCH_TOTAL * VERTICES_PER_PATCH;
+/// <summary>
+/// 頂点を生成
+/// </summary>
+void Scene::CreateVertices()
+{
+	// クリア
+	m_vertices.clear();
+	// 必要な分配列を用意
+	m_vertices.reserve(4);
 
-	std::vector<DirectX::VertexPositionTexture> vertices(TOTAL_VERTICES);
+	constexpr int gridWidth = 2;
+	constexpr int gridHeight = 2;
+	constexpr float tileSize = 10.0f;
 
-	// 1つのパッチのサイズ
-	const float PATCH_SIZE = 20.0f; // 各パッチの領域（ワールド座標で）
-	const float HALF_EXTENT_X = PATCH_COUNT_X * PATCH_SIZE * 0.5f;
-	const float HALF_EXTENT_Z = PATCH_COUNT_Z * PATCH_SIZE * 0.5f;
+	m_vertices.reserve(gridWidth * gridHeight);
 
-	for (int patchZ = 0; patchZ < PATCH_COUNT_Z; ++patchZ) {
-		for (int patchX = 0; patchX < PATCH_COUNT_X; ++patchX) {
+	for (int z = 0; z < gridHeight; ++z)
+	{
+		for (int x = 0; x < gridWidth; ++x)
+		{
+			float fx = static_cast<float>(x) / (gridWidth - 1);
+			float fz = static_cast<float>(z) / (gridHeight - 1);
 
-			int patchIndex = patchZ * PATCH_COUNT_X + patchX;
-			int baseVertexIndex = patchIndex * VERTICES_PER_PATCH;
+			float posX = (fx - 0.5f) * tileSize * (gridWidth - 1);
+			float posZ = (fz - 0.5f) * tileSize * (gridHeight - 1);
 
-			float offsetX = patchX * PATCH_SIZE - HALF_EXTENT_X;
-			float offsetZ = patchZ * PATCH_SIZE - HALF_EXTENT_Z;
+			m_vertices.push_back({
+				DirectX::SimpleMath::Vector3(posX, 0.0f, posZ),
+				DirectX::SimpleMath::Vector2(fx, fz)
+				});
+		}
+	}
 
-			for (int z = 0; z < 4; ++z) {
-				for (int x = 0; x < 8; ++x) {
-					int localIndex = z * 8 + x;
+	// 頂点バッファの作成
+	D3D11_BUFFER_DESC vertexBufferDesc = {};
+	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	vertexBufferDesc.ByteWidth = static_cast<UINT>(sizeof(DirectX::VertexPositionTexture) * m_vertices.size());
+	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
-					float fx = offsetX + PATCH_SIZE * (float)x / 7.0f; 
-					float fz = offsetZ + PATCH_SIZE * (float)z / 3.0f;
+	D3D11_SUBRESOURCE_DATA vertexBufferData = {};
+	vertexBufferData.pSysMem = m_vertices.data();
 
-					float u = (float)x / 7.0f;
-					float v = (float)z / 3.0f;
+	m_device->CreateBuffer(&vertexBufferDesc, &vertexBufferData, m_vertexBuffer.ReleaseAndGetAddressOf());
+}
 
-					vertices[baseVertexIndex + localIndex] = {
-						DirectX::XMFLOAT3(fx, 0.0f, fz),
-						DirectX::XMFLOAT2(u, v)
-					};
-				}
-			}
+
+/// <summary>
+/// インデックスの作成
+/// </summary>
+void Scene::CreateIndices()
+{
+	// 初期化としてクリア
+	m_indices.clear();
+	// 必要な数配列を用意
+	m_indices.reserve(4);
+
+	for (uint16_t i = 0; i < 4; ++i)
+		m_indices.push_back(i);
+
+	// インデックスバッファの作成
+	D3D11_BUFFER_DESC indexBufferDesc = {};
+	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	indexBufferDesc.ByteWidth = static_cast<UINT>(sizeof(uint16_t) * m_indices.size());
+	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+
+	D3D11_SUBRESOURCE_DATA indexBufferData = {};
+	indexBufferData.pSysMem = m_indices.data();
+
+	m_device->CreateBuffer(&indexBufferDesc, &indexBufferData, m_indexBuffer.ReleaseAndGetAddressOf());
+}
+
+
+void Scene::CreateInstanceData()
+{
+	m_instanceData.clear();
+
+	constexpr int width = 2500;
+	constexpr int height = 2500;
+	constexpr float tileSize = 10.0f; // 各板ポリの幅
+
+	m_instanceData.clear();
+	m_instanceData.reserve(width * height);
+
+	// 原点を中心に配置するためのオフセット
+	const float offsetX = (width - 1) * tileSize * 0.5f;
+	const float offsetZ = (height - 1) * tileSize * 0.5f;
+
+	for (int y = 0; y < height; ++y)
+	{
+		for (int x = 0; x < width; ++x)
+		{
+			float worldX = x * tileSize - offsetX;
+			float worldZ = y * tileSize - offsetZ;
+
+			InstanceData instance = {};
+			instance.worldMatrix = DirectX::SimpleMath::Vector3(worldX, 0.0f, worldZ);
+			m_instanceData.push_back(instance);
 		}
 	}
 
 
-	// 頂点バッファの説明
-	D3D11_BUFFER_DESC vertexBufferDesc = {};
-	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	vertexBufferDesc.ByteWidth = static_cast<UINT>(sizeof(DirectX::VertexPositionTexture) * vertices.size()); 
-	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vertexBufferDesc.CPUAccessFlags = 0;
+	// StructuredBuffer 用バッファ作成
+	D3D11_BUFFER_DESC desc = {};
+	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.ByteWidth = UINT(sizeof(InstanceData) * m_instanceData.size());
+	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	desc.StructureByteStride = sizeof(InstanceData);
+	desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
 
-	// 頂点データの初期化
-	D3D11_SUBRESOURCE_DATA vertexData = {};
-	vertexData.pSysMem = vertices.data();
+	D3D11_SUBRESOURCE_DATA initData = {};
+	initData.pSysMem = m_instanceData.data();
 
-	m_device->CreateBuffer(&vertexBufferDesc, &vertexData, m_vertexBuffer.ReleaseAndGetAddressOf());
+	m_device->CreateBuffer(&desc, &initData, m_instanceStructuredBuffer.ReleaseAndGetAddressOf());
+
+	// Shader Resource View を作成
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+	srvDesc.Buffer.ElementWidth = static_cast<UINT>(m_instanceData.size());
+
+	m_device->CreateShaderResourceView(m_instanceStructuredBuffer.Get(), &srvDesc, m_instanceSRV.ReleaseAndGetAddressOf());
+
 }
-
 

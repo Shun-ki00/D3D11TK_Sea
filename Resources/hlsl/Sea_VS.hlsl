@@ -3,7 +3,7 @@
 
 // 頂点シェーダー本体
 // 頂点シェーダーからハルシェーダーへ
-VS_OUTPUT main(VS_INPUT input)
+VS_OUTPUT main(VS_INPUT input, uint instanceId : SV_InstanceID)
 {
     VS_OUTPUT output;
 
@@ -23,6 +23,8 @@ VS_OUTPUT main(VS_INPUT input)
     output.position = input.position;
     // 頂点色とUV座標をそのまま渡す
     output.uv = input.uv;
+    // IDを渡す
+    output.instanceId = instanceId;
 
     return output;
 }

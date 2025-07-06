@@ -12,6 +12,7 @@ struct VS_OUTPUT
 {
     float4 position : SV_POSITION; // 頂点位置
     float2 uv       : TEXCOORD;    // UV座標
+    uint instanceId : SV_InstanceID;
 };
 
 
@@ -22,12 +23,14 @@ struct HS_INPUT
 {
     float4 position : SV_POSITION; // 頂点の位置
     float2 uv       : TEXCOORD;    // UV座標
+    uint instanceId : SV_InstanceID;
 };
 // 出力構造体
 struct HS_OUTPUT
 {
     float4 position : SV_POSITION; // 頂点の位置
     float2 uv : TEXCOORD; // UV座標
+    uint instanceId : SV_InstanceID;
 };
 // テッセレーション定数
 struct HS_CONSTANT_OUTPUT
@@ -73,6 +76,7 @@ cbuffer TransformConstBuffer : register(b0)
     float4 cameraPosition;
     float4 TessellationFactor; 
 };
+
 
 // 海のノイズデータ
 cbuffer SeaNoiseConstBuffer : register(b1)
@@ -123,3 +127,10 @@ cbuffer GerstnerWaveConstBuffer : register(b2)
     float qRatio3     : packoffset(c5.z);
     float pad3        : packoffset(c5.w);
 }
+
+// テクスチャ
+Texture2D tex : register(t0);
+// サンプラー
+SamplerState sam : register(s0);
+
+StructuredBuffer<float3> InstanceBuffer : register(t1);
