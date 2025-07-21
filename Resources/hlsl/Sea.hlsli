@@ -5,7 +5,7 @@
 struct VS_INPUT
 {
     float4 position : SV_POSITION; // 頂点位置
-    float2 uv       : TEXCOORD; // UV座標
+    float2 uv       : TEXCOORD;    // UV座標
 };
 // 出力構造体
 struct VS_OUTPUT
@@ -27,7 +27,7 @@ struct HS_INPUT
 struct HS_OUTPUT
 {
     float4 position : SV_POSITION; // 頂点の位置
-    float2 uv : TEXCOORD; // UV座標
+    float2 uv       : TEXCOORD;    // UV座標
 };
 // テッセレーション定数
 struct HS_CONSTANT_OUTPUT
@@ -47,20 +47,20 @@ struct DS_INPUT
 // 出力構造体
 struct DS_OUTPUT
 {
-    float4 position : SV_POSITION;
-    float2 uv : TEXCOORD0;
+    float4 position : SV_POSITION; // 頂点座標
+    float2 uv       : TEXCOORD0;   // UV座標
     
-    float4 positionWS : POSITION;
+    float4 positionWS : POSITION;  // 頂点ワールド座標
 };
 
+// === ピクセルシェーダー ===
 
-// 入力：頂点シェーダーから送られてくるデータ
 struct PS_INPUT
 {
-    float4 position : SV_POSITION;
-    float2 uv : TEXCOORD0;
+    float4 position : SV_POSITION; // 頂点座標
+    float2 uv       : TEXCOORD0;   // UV座標
     
-    float4 positionWS : POSITION;
+    float4 positionWS : POSITION;  // 頂点ワールド座標
 };
 
 

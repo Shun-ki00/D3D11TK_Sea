@@ -79,7 +79,7 @@ DS_OUTPUT main(
     float3 worldPosition = float3(0.0f, 0.0f, 0.0f);
     float2 uvOut = float2(0.0f, 0.0f);
 
-    // 制御点補間（8×4）
+    // 制御点補間
     const int X = 2;
     const int Z = 2;
 
@@ -101,12 +101,11 @@ DS_OUTPUT main(
     float2 xy = worldPosition.xz;
     float t = TessellationFactor.y;
     
-
+    // 波の計算
     worldPosition = P(xy, t).xzy;
     
-    // ワールド→クリップ変換
+    // ワールド座標変換
     float4 pos = mul(float4(worldPosition, 1.0f), matWorld);
-    
     output.positionWS = pos;
     
     pos = mul(pos, matView);

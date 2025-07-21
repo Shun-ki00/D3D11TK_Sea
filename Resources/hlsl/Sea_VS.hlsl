@@ -1,31 +1,16 @@
 #include "Sea.hlsli"
 
 
-// 頂点シェーダー本体
-// 頂点シェーダーからハルシェーダーへ
 VS_OUTPUT main(VS_INPUT input, uint instanceId : SV_InstanceID)
 {
-    VS_OUTPUT output;
-
-   // ローカル空間 → ワールド空間
-    float4 worldPos = mul(input.position, matWorld);
+    VS_OUTPUT output = (VS_OUTPUT)0;
     
-    // ワールド空間 → ビュー空間 → クリップ空間
-    output.position = mul(worldPos, matView);
-    output.position = mul(output.position, matProj);
-
+    // 頂点座標を設定
+    float3 offset = InstanceBuffer[instanceId];
+    output.position = input.position + float4(offset, 0.0f);
     
-    //output.position = float4(input.position, 1.0f);
-    
-    // ローカル空間 → ワールド空間
-   // output.position = mul(float4(input.position, 1.0f), matWorld);
-    
-    output.position = input.position;
-    // 頂点色とUV座標をそのまま渡す
+    // UV値を設定
     output.uv = input.uv;
     
-    float3 offset = InstanceBuffer[instanceId];
-    output.position += float4(offset, 1.0f);
-
     return output;
 }

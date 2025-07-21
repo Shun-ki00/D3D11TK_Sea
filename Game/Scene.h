@@ -8,6 +8,14 @@ class DebugCamera;
 
 class Scene
 {
+public:
+
+	// インスタンスデータの数
+	static const int WIDTH; 
+	static const int HEIGHT;
+	// タイルサイズ
+	static const float TILE_SIZE;
+
 private:
 
 	// 変換用定数バッファ

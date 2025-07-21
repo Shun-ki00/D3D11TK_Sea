@@ -35,8 +35,7 @@ float perlinNoise(float2 uv)
     u.y);
 }
 
-// オリジナルノイズを生成する関数
-float originalNoise(float2 uv)
+float FractalNoise(float2 uv)
 {
     float output = 0.0f;
     float amplitude = 1.0f;
@@ -64,18 +63,12 @@ void waveUV(inout float2 uv)
 // ピクセルシェーダー本体
 float4 main(PS_INPUT input) : SV_TARGET
 {
-    // ランダムなオフセットを生成
+  
     float2 uv = input.uv;
-       
-    float2 offset = perlinNoise(uv );
+    float2 offset = perlinNoise(uv);
     uv += offset;
     
-    
-    //float2 offset = perlinNoise(uv);
-    //uv += offset;
-    
-    // オリジナルノイズ
-    float p = originalNoise(uv * fnUVPower);
+    float p = FractalNoise(uv * fnUVPower);
     uv += float2(p * fnUVPath1 * cos(TessellationFactor.y), p * fnUVPath2 * sin(TessellationFactor.y));
     
     // 波打ち関数
@@ -84,6 +77,7 @@ float4 main(PS_INPUT input) : SV_TARGET
     // テクスチャをサンプリング
     float4 output = tex.Sample(sam,uv);
     
+    output.a = 0.7f;
     
     return output;
 }
